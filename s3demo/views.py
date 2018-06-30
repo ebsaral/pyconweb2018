@@ -1,11 +1,17 @@
-from django.http import Http404, HttpResponseRedirect
+import json, csv, datetime
+
+from django.conf import settings
+from django.http import Http404, HttpResponseRedirect, HttpResponse, \
+    HttpResponseBadRequest
 from django.urls import reverse
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic import View
 from django.contrib import messages
 
+from s3demo import consts
 from s3demo.forms import DocumentUploadForm
-from s3demo.models import Document
+from s3demo.models import Document, Data
+from s3demo.utils import SNSManager, S3Manager
 
 
 class DocumentManagerView(TemplateResponseMixin, View):
@@ -66,3 +72,31 @@ def delete_document(request, doc_id):
         raise Http404('Yo! Document does not exist on Earth.')
     document.delete()
     return HttpResponseRedirect(reverse('list_documents'))
+
+
+def handle_event(request):
+    data = json.loads(request.body)
+    # TODO: Validate SNS message, maybe with a decorator
+
+    sns_manager = SNSManager(settings.SNS_TOPIC_ARN)
+    s3_manager = S3Manager(consts.BUCKET_NAME)
+
+    if 'Token' in data:
+        sns_manager.verify_subscription(data['Token'])
+    elif 'Message' in data:
+        records = data['Message']['Records']
+        for record in records:
+            path = record['s3']['object']['key']
+            object = s3_manager.s3.meta.client.get_object(Key=path)
+            stream = object['Body']
+            for row in csv.reader(iter(stream)):
+                client, time, value = row.strip('\n').strip('\r').split(',')
+                time = datetime.datetime.strptime(time, '%d/%m/%Y')
+                value = float(value)
+                Data.objects.create(
+                    client=client,
+                    time=time,
+                    value=value
+                )
+
+    return HttpResponse('ok')

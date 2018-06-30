@@ -12,4 +12,7 @@ urlpatterns = [
     path('documents/delete/<int:doc_id>/',
          views.delete_document,
          name='delete_document'),
+    path('handler/',
+         views.handle_event,
+         name='event_handler'),
 ]

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import raven
 import sys
 from os.path import abspath, basename, dirname, join, normpath
 import dj_database_url
@@ -56,6 +57,9 @@ INSTALLED_APPS = [
     # Local
     'main.apps.MainConfig',
     's3demo.apps.S3DemoConfig',
+
+    # External
+    'raven.contrib.django.raven_compat',
 ]
 
 MIDDLEWARE = [
@@ -142,3 +146,9 @@ STATIC_ROOT = normpath(join(SITE_ROOT, 'staticfiles'))
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
 AWS_REGION = os.getenv('AWS_REGION')
+SNS_TOPIC_ARN = os.getenv('SNS_TOPIC_ARN')
+
+# SENTRY SETTINGS
+RAVEN_CONFIG = {
+    'dsn': os.getenv('SENTRY_DSN')
+}

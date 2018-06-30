@@ -66,3 +66,27 @@ class S3Manager(object):
         # Alternative
         # https://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Client.upload_file
         # s3.meta.client.upload_file('/tmp/hello.txt', 'mybucket', 'hello.txt')
+
+
+class SNSManager(object):
+
+    def __init__(self, arn):
+        self.arn = arn
+
+        access_key = settings.AWS_ACCESS_KEY_ID
+        secret_key = settings.AWS_SECRET_KEY
+        region = settings.AWS_REGION
+
+        session = boto3.session.Session()
+
+        self.sns = session.resource(
+            'sns',
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name=region,
+            use_ssl=True
+        )
+
+    def verify_subscription(self, token):
+        topic = self.sns.Topic(self.arn)
+        topic.confirm_subscription(Token=token)
