@@ -1,0 +1,1 @@
+BUCKET_NAME = 'pyconweb2018'

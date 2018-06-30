@@ -24,6 +24,36 @@ class S3Manager(object):
             use_ssl=True
         )
 
+    def get_signed_url(self, path, expires):
+        """
+        Return signed url
+        :param path: Full path to the object
+        :param expires: Integer, expire in seconds
+        :return: signed url
+        """
+        params = {
+            'Bucket': self.bucket,
+            'Key': path
+        }
+
+        acl = self.s3.meta.client.get_object_acl(
+            Bucket=self.bucket,
+            Key=path)
+
+        print("ACL INFO:")
+        print(acl)
+
+        url = self.s3.meta.client.generate_presigned_url('get_object',
+                                                         Params=params,
+                                                         ExpiresIn=expires)
+        return url
+
+    def get_url(self, path):
+        url = self.get_signed_url(path, expires=1)
+        # You can build your own url in this structure:
+        # https://{bucket_name}.{s3_url}/{path_to_file}
+        return url[:url.index('?')]
+
     def upload_file(self, file_obj, path):
         '''
         Upload the file

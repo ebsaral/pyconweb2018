@@ -6,6 +6,8 @@ from django.contrib import messages
 from s3demo.forms import DocumentUploadForm
 from s3demo.models import Document
 from s3demo.utils import S3Manager
+from s3demo import consts
+
 
 
 class DocumentManagerView(TemplateResponseMixin, View):
@@ -29,16 +31,18 @@ class DocumentManagerView(TemplateResponseMixin, View):
 
         if form.is_valid():
             file = form.cleaned_data.get('file')
-            extension = file.name[file.name.rindex('.') + 1:]
-            path = "{extension}/{filename}".format(
-                extension=extension, filename=file.name
-            )
-            manager = S3Manager(bucket='pyconweb2018')
-            manager.upload_file(file_obj=file, path=path)
-            msg = "Document is uploaded to path: {path}".format(path=path)
-            Document.objects.create(name=file.name, url=path)
-            messages.add_message(request, messages.SUCCESS, msg)
+            path = Document.upload_file(file)
 
+            if path:
+                msg = "Document is uploaded to path: {path}".format(path=path)
+                msg_type = messages.SUCCESS
+
+            else:
+                msg = "There was an issue while uploading the file :/ Life is" \
+                      "full of suprises."
+                msg_type = messages.ERROR
+
+            messages.add_message(request, msg_type, msg)
 
         context = {
             'documents': documents,
