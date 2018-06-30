@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-import raven
+import logging
 import sys
 from os.path import abspath, basename, dirname, join, normpath
 import dj_database_url
@@ -152,3 +152,58 @@ SNS_TOPIC_ARN = os.getenv('SNS_TOPIC_ARN')
 RAVEN_CONFIG = {
     'dsn': os.getenv('SENTRY_DSN')
 }
+
+# LOGGING
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['sentry'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s '
+                      '%(process)d %(thread)d %(message)s'
+        },
+        'non_verbose': {
+            'format': '[%(levelname)s %(asctime)s] [%(module)s] '
+                      '- %(message)s'
+        }
+    },
+    'handlers': {
+        'sentry': {
+            'level': 'WARNING',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'pycon': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        }
+    },
+}
+
+logger = logging.getLogger('pycon')

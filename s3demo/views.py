@@ -75,10 +75,13 @@ def delete_document(request, doc_id):
 
 
 def handle_event(request):
+    settings.logger.debug('entered handler')
+    settings.logger.debug('method: {m}'.format(m=request.method))
+
     if request.method == 'POST':
+        settings.logger.debug('DATA: {data}'.format(data=request.POST))
         data = json.loads(request.POST)
         # TODO: Validate SNS message, maybe with a decorator
-
         sns_manager = SNSManager(settings.SNS_TOPIC_ARN)
         s3_manager = S3Manager(consts.BUCKET_NAME)
 
