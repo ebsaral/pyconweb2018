@@ -1,3 +1,4 @@
+import codecs
 import json, csv, datetime
 
 from django.conf import settings
@@ -102,8 +103,10 @@ def handle_event(request):
                 path = record['s3']['object']['key']
                 object = s3_manager.s3.meta.client.get_object(
                     Bucket=s3_manager.bucket, Key=path)
-                stream = object['Body']
-                for row in csv.reader(stream):
+
+                for row in csv.DictReader(
+                        codecs.getreader('utf-8')(object['Body'])):
+
                     if row:
                         client, time, value = row.strip(
                             '\n').strip('\r').split(',')
