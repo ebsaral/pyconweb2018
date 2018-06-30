@@ -106,13 +106,13 @@ def handle_event(request):
 
                 for row in csv.DictReader(
                         codecs.getreader('utf-8')(object['Body'])):
-                    client, time, value = row
-                    time = datetime.datetime.strptime(time, '%d/%m/%Y')
-                    value = float(value)
+                    c, t, v = row['client'], row['time'], row['value']
+                    t = datetime.datetime.strptime(t, '%d/%m/%Y')
+                    v = float(v)
                     Data.objects.create(
-                        client=client,
-                        time=time,
-                        value=value
+                        client=c,
+                        time=t,
+                        value=v
                     )
 
     return HttpResponse('ok')

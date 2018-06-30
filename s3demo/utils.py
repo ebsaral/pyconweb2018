@@ -36,12 +36,12 @@ class S3Manager(object):
             'Key': path
         }
 
-        acl = self.s3.meta.client.get_object_acl(
-            Bucket=self.bucket,
-            Key=path)
-
-        print("ACL INFO:")
-        print(acl)
+        # acl = self.s3.meta.client.get_object_acl(
+        #     Bucket=self.bucket,
+        #     Key=path)
+        #
+        # print("ACL INFO:")
+        # print(acl)
 
         url = self.s3.meta.client.generate_presigned_url('get_object',
                                                          Params=params,
