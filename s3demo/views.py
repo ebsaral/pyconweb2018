@@ -95,7 +95,8 @@ def handle_event(request):
             records = json.loads(data['Message'])['Records']
             for record in records:
                 path = record['s3']['object']['key']
-                object = s3_manager.s3.meta.client.get_object(Key=path)
+                object = s3_manager.s3.meta.client.get_object(
+                    Bucket=s3_manager.bucket, Key=path)
                 stream = object['Body']
                 for row in csv.reader(iter(stream)):
                     if row:
