@@ -33,5 +33,17 @@
     <p>There is no document to display. Please upload one!</p>
 {% endif %}
 
+<hr/>
+
+<h3>Parsed Data:</h3>
+{% if data.count %}
+    <ul>
+    {% for d in data %}
+        <li>Client": {{ d.client }}, Timestamp: {{ d.time }}, Value: {{ d.value }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>There is no data to display. Please upload a file to be parsed!</p>
+{% endif %}
 </body>
 </html>
