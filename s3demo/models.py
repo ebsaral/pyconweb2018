@@ -14,6 +14,7 @@ class Document(models.Model):
     EXPIRES = 60
     ENABLE_EXPIRING = False
 
+    @property
     def s3_url(self):
         """
         Generate pre-signed url with expiration time if expiring enabled

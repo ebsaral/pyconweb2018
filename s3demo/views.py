@@ -1,13 +1,11 @@
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic import View
 from django.contrib import messages
 
 from s3demo.forms import DocumentUploadForm
 from s3demo.models import Document
-from s3demo.utils import S3Manager
-from s3demo import consts
-
 
 
 class DocumentManagerView(TemplateResponseMixin, View):
@@ -51,18 +49,20 @@ class DocumentManagerView(TemplateResponseMixin, View):
         return self.render_to_response(context)
 
 
-class DocumentView(TemplateResponseMixin, View):
-    template_name = 'detail.html'
+def download_document(request, doc_id):
+    try:
+        document = Document.objects.get(pk=doc_id)
+    except Document.DoesNotExist:
+        raise Http404('Yo! Document does not exist on Earth.')
 
-    def get(self, request, doc_id, *args, **kwargs):
-        try:
-            document = Document.objects.get(pk=doc_id)
-        except Document.DoesNotExist:
-            raise Http404('Yo! Document does not exist on Earth.')
-
-        context = {
-            'document': document
-        }
-        return self.render_to_response(context)
+    url = document.s3_url
+    return HttpResponseRedirect(url)
 
 
+def delete_document(request, doc_id):
+    try:
+        document = Document.objects.get(pk=doc_id)
+    except Document.DoesNotExist:
+        raise Http404('Yo! Document does not exist on Earth.')
+    document.delete()
+    return HttpResponseRedirect(reverse('list_documents'))
