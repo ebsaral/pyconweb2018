@@ -81,9 +81,9 @@ def handle_event(request):
     logger = logging.getLogger('pycon')
 
     if request.method == 'POST':
-        data = dict(request.POST.iterlists())
+        data = dict(request.POST)
         logger.debug(data)
-        
+
         # TODO: Validate SNS message, maybe with a decorator
         sns_manager = SNSManager(settings.SNS_TOPIC_ARN)
         s3_manager = S3Manager(consts.BUCKET_NAME)
