@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-import logging
 import sys
 from os.path import abspath, basename, dirname, join, normpath
 import dj_database_url
@@ -205,5 +204,3 @@ LOGGING = {
         }
     },
 }
-
-logger = logging.getLogger('pycon')

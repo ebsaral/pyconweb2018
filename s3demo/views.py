@@ -77,9 +77,6 @@ def delete_document(request, doc_id):
 
 @csrf_exempt
 def handle_event(request):
-    settings.logger.debug('entered handler')
-    settings.logger.debug('method: {m}'.format(m=request.method))
-
     if request.method == 'POST':
         data = dict(request.POST.iterlists())
 
