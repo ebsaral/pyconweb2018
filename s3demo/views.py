@@ -92,19 +92,21 @@ def handle_event(request):
         if 'Token' in data:
             sns_manager.verify_subscription(data['Token'])
         elif 'Message' in data:
-            records = data['Message']['Records']
+            records = json.loads(data['Message'])['Records']
             for record in records:
                 path = record['s3']['object']['key']
                 object = s3_manager.s3.meta.client.get_object(Key=path)
                 stream = object['Body']
                 for row in csv.reader(iter(stream)):
-                    client, time, value = row.strip('\n').strip('\r').split(',')
-                    time = datetime.datetime.strptime(time, '%d/%m/%Y')
-                    value = float(value)
-                    Data.objects.create(
-                        client=client,
-                        time=time,
-                        value=value
-                    )
+                    if row:
+                        client, time, value = row.strip(
+                            '\n').strip('\r').split(',')
+                        time = datetime.datetime.strptime(time, '%d/%m/%Y')
+                        value = float(value)
+                        Data.objects.create(
+                            client=client,
+                            time=time,
+                            value=value
+                        )
 
     return HttpResponse('ok')
