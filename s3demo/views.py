@@ -75,28 +75,29 @@ def delete_document(request, doc_id):
 
 
 def handle_event(request):
-    data = json.loads(request.body)
-    # TODO: Validate SNS message, maybe with a decorator
+    if request.method == 'POST':
+        data = json.loads(request.POST)
+        # TODO: Validate SNS message, maybe with a decorator
 
-    sns_manager = SNSManager(settings.SNS_TOPIC_ARN)
-    s3_manager = S3Manager(consts.BUCKET_NAME)
+        sns_manager = SNSManager(settings.SNS_TOPIC_ARN)
+        s3_manager = S3Manager(consts.BUCKET_NAME)
 
-    if 'Token' in data:
-        sns_manager.verify_subscription(data['Token'])
-    elif 'Message' in data:
-        records = data['Message']['Records']
-        for record in records:
-            path = record['s3']['object']['key']
-            object = s3_manager.s3.meta.client.get_object(Key=path)
-            stream = object['Body']
-            for row in csv.reader(iter(stream)):
-                client, time, value = row.strip('\n').strip('\r').split(',')
-                time = datetime.datetime.strptime(time, '%d/%m/%Y')
-                value = float(value)
-                Data.objects.create(
-                    client=client,
-                    time=time,
-                    value=value
-                )
+        if 'Token' in data:
+            sns_manager.verify_subscription(data['Token'])
+        elif 'Message' in data:
+            records = data['Message']['Records']
+            for record in records:
+                path = record['s3']['object']['key']
+                object = s3_manager.s3.meta.client.get_object(Key=path)
+                stream = object['Body']
+                for row in csv.reader(iter(stream)):
+                    client, time, value = row.strip('\n').strip('\r').split(',')
+                    time = datetime.datetime.strptime(time, '%d/%m/%Y')
+                    value = float(value)
+                    Data.objects.create(
+                        client=client,
+                        time=time,
+                        value=value
+                    )
 
     return HttpResponse('ok')
