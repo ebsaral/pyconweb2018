@@ -103,7 +103,7 @@ def handle_event(request):
                 object = s3_manager.s3.meta.client.get_object(
                     Bucket=s3_manager.bucket, Key=path)
                 stream = object['Body']
-                for row in csv.reader(iter(stream)):
+                for row in csv.reader(stream):
                     if row:
                         client, time, value = row.strip(
                             '\n').strip('\r').split(',')
