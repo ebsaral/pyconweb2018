@@ -1,0 +1,37 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>pyconweb2018 - Documents</title>
+</head>
+<body>
+
+{% for message in messages %}
+    <h3>{{ message }}</h3>
+{% endfor %}
+
+<p><h3>Upload Form:</h3></p>
+<form action="{{ request.path }}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_table }}
+    <input type="submit" value="Submit" />
+</form>
+
+
+<hr/>
+
+<h3>Uploaded Documents:</h3>
+{% if documents.count %}
+    <ul>
+    {% for document in documents %}
+        <li>{{ document.name }} - {{ document.create_date }} - <a href="{% url 'view_document' document.id %}" target="_blank">Open</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>There is no document to display. Please upload one!</p>
+{% endif %}
+
+</body>
+</html>
