@@ -26,24 +26,17 @@ class DocumentManagerView(TemplateResponseMixin, View):
     def data(self):
         return Data.objects.order_by('-create_date')
 
-    def get_common_context(self):
-        return {
-            'documents': self.documents,
-            'data': self.data,
-        }
-
     def get(self, request, *args, **kwargs):
         form = DocumentUploadForm()
-
         context = {
+            'documents': self.documents,
+            'data': self.data,
             'form': form,
-        }.update(self.get_common_context())
-
+        }
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         form = DocumentUploadForm(data=request.POST, files=request.FILES)
-        documents = Document.objects.order_by('-create_date')
 
         if form.is_valid():
             file = form.cleaned_data.get('file')
@@ -61,9 +54,10 @@ class DocumentManagerView(TemplateResponseMixin, View):
             messages.add_message(request, msg_type, msg)
 
         context = {
-            'form': form
-        }.update(self.get_common_context())
-
+            'documents': self.documents,
+            'data': self.data,
+            'form': form,
+        }
         return self.render_to_response(context)
 
 
