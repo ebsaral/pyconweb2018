@@ -82,7 +82,8 @@ def handle_event(request):
 
     if request.method == 'POST':
         data = dict(request.POST)
-        logger.debug(data)
+        logger.debug("DATA: {data}".format(data=data))
+        logger.debug("BODY: {body}".format(body=request.body))
 
         # TODO: Validate SNS message, maybe with a decorator
         sns_manager = SNSManager(settings.SNS_TOPIC_ARN)
