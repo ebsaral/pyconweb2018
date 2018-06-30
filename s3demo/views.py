@@ -81,6 +81,15 @@ def delete_document(request, doc_id):
     return HttpResponseRedirect(reverse('list_documents'))
 
 
+def delete_data(request, data_id):
+    try:
+        data = Data.objects.get(pk=data_id)
+    except Data.DoesNotExist:
+        raise Http404('Yo! Data do not exist on Earth.')
+    data.delete()
+    return HttpResponseRedirect(reverse('list_documents'))
+
+
 @csrf_exempt
 def handle_event(request):
     import logging

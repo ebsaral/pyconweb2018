@@ -26,7 +26,7 @@
 {% if documents.count %}
     <ul>
     {% for document in documents %}
-        <li>{{ document.name }} - {{ document.create_date }} - <a href="{% url 'download_document' document.id %}" target="_blank">Download</a> - <a href="{% url 'delete_document' document.id %}" target="_blank">Delete</a> (path: {{ document.url }} - s3 url: {{ document.s3_url }})</li>
+        <li>{{ document.name }} - {{ document.create_date }} - <a href="{% url 'download_document' document.id %}" target="_blank">Download</a> - <a href="{% url 'delete_document' document.id %}">Delete</a> (path: {{ document.url }} - s3 url: {{ document.s3_url }})</li>
     {% endfor %}
     </ul>
 {% else %}
@@ -39,7 +39,7 @@
 {% if data.count %}
     <ul>
     {% for d in data %}
-        <li>Client": {{ d.client }}, Timestamp: {{ d.time }}, Value: {{ d.value }}</li>
+        <li>Client: {{ d.client }}, Timestamp: {{ d.time }}, Value: {{ d.value }} - <a href="{% url 'delete_data' d.id %}">Delete</a></li>
     {% endfor %}
     </ul>
 {% else %}
