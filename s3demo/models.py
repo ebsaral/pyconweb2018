@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.functional import cached_property
 from django.utils.encoding import force_text, smart_text
 
 from s3demo.utils import S3Manager
@@ -11,9 +10,6 @@ class Document(models.Model):
     url = models.TextField('URL')
     create_date = models.DateTimeField(auto_now_add=True)
 
-    EXPIRES = 60
-    ENABLE_EXPIRING = False
-
     @property
     def s3_url(self):
         """
@@ -21,8 +17,8 @@ class Document(models.Model):
         :return: url string
         """
         manager = S3Manager(bucket=consts.BUCKET_NAME)
-        if self.ENABLE_EXPIRING:
-            url = manager.get_signed_url(self.url, expires=self.EXPIRES)
+        if consts.ENABLE_EXPIRING:
+            url = manager.get_signed_url(self.url, expires=consts.EXPIRES)
         else:
             url = manager.get_url(self.url)
         return url
